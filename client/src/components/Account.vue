@@ -279,19 +279,6 @@ export default {
       }
     },
     // TODO: Add customer billing portal
-    async openCustomerBillingPortal() {
-      try {
-        const response = await axios.post('/api/customer-portal')
-        const url = response.data.session.url
-        if (url) {
-          window.location = url
-        } else {
-          console.log(response)
-        }
-      } catch (e) {
-        console.log(`couldn't create customer portal session`, e)
-      }
-    },
     changePlan() {
       this.$router.push('pricing')
     },
