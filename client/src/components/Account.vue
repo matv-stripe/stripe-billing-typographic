@@ -19,12 +19,7 @@
               {{ currentPlan.name }} plan, ${{ currentPlan.rate }} per month
             </p>
             <ul>
-              <li
-                v-for="(feature, index) in currentPlan.features"
-                v-text="feature"
-                :key="index"
-                class="feature"
-              ></li>
+              <li v-for="(feature, index) in currentPlan.features" v-text="feature" :key="index" class="feature"></li>
             </ul>
           </template>
         </div>
@@ -33,25 +28,19 @@
       <section class="account-item">
         <h2>Payment</h2>
         <div class="details payment-details">
-          <template
-            v-if="
-              store.paymentMethod &&
-              store.subscription.collectionMethod === 'charge_automatically'
-            "
-          >
-            <div
-              :class="['card-brand', store.paymentMethod.brand.toLowerCase()]"
-            ></div>
+          <template v-if="
+            store.paymentMethod &&
+            store.subscription.collectionMethod === 'charge_automatically'
+          ">
+            <div :class="['card-brand', store.paymentMethod.brand.toLowerCase()]"></div>
             <p class="last4">
               &bull;&bull;&bull;&bull;{{ store.paymentMethod.last4 }}
             </p>
           </template>
-          <p
-            v-else-if="
-              store.subscription &&
-              store.subscription.collectionMethod === 'send_invoice'
-            "
-          >
+          <p v-else-if="
+            store.subscription &&
+            store.subscription.collectionMethod === 'send_invoice'
+          ">
             Invoices will be emailed at the end of the billing cycle.
           </p>
           <p v-else>No payment method.</p>
@@ -63,19 +52,12 @@
         <div class="details">
           <p v-if="store.subscription">
             You’ll be billed
-            <span
-              :class="{ full: extraRequests > 0 }"
-              v-text="nextBillingEstimate"
-            ></span>
+            <span :class="{ full: extraRequests > 0 }" v-text="nextBillingEstimate"></span>
             on {{ nextBillingCycle }}.
           </p>
           <p v-else>You don’t have an active subscription.</p>
         </div>
-        <button
-          v-if="store.subscription"
-          class="update"
-          @click.prevent="cancelSubscription()"
-        >
+        <button v-if="store.subscription" class="update" @click.prevent="cancelSubscription()">
           Cancel
         </button>
       </section>
@@ -132,11 +114,8 @@
               </p>
             </template>
             <div class="meter">
-              <div
-                class="progress"
-                :class="{ full: extraRequests > 0 }"
-                :style="{ width: requestPercentage + '%' }"
-              ></div>
+              <div class="progress" :class="{ full: extraRequests > 0 }" :style="{ width: requestPercentage + '%' }">
+              </div>
             </div>
             <div class="upgrade-plan" v-if="extraRequests > 0">
               <p>Want to increase your included requests?</p>
@@ -159,130 +138,131 @@
  * Top-level component that show an account summary for the user.
  */
 
-import axios from 'axios'
-import store from '../store'
+import axios from "axios";
+import store from "../store";
 
 export default {
-  name: 'Account',
+  name: "Account",
   data() {
-    return { store }
+    return { store };
   },
   computed: {
     // Calculate the percentage of allowed requests made in this billing cycle
-    requestPercentage: function () {
+    requestPercentage: function() {
       if (store.subscription.meteredUsage && this.currentPlan.numRequests) {
         let percentage =
-          (store.subscription.meteredUsage / this.currentPlan.numRequests) * 100
+          (store.subscription.meteredUsage / this.currentPlan.numRequests) *
+          100;
         // If the percentage is over 100%, round off to 100%
         if (percentage > 100) {
-          percentage = 100
+          percentage = 100;
         }
-        return percentage
+        return percentage;
       }
     },
     // Number of metered requests used this billing cycle (formatted)
-    requests: function () {
+    requests: function() {
       if (store.subscription.meteredUsage) {
-        return store.subscription.meteredUsage.toLocaleString(undefined)
+        return store.subscription.meteredUsage.toLocaleString(undefined);
       }
-      return 0
+      return 0;
     },
     // Number of metered requests allowed in this plan
-    numRequests: function () {
-      return this.currentPlan.numRequests.toLocaleString(undefined)
+    numRequests: function() {
+      return this.currentPlan.numRequests.toLocaleString(undefined);
     },
-    extraRequests: function () {
+    extraRequests: function() {
       if (this.currentPlan.numRequests) {
-        return store.subscription.meteredUsage - this.currentPlan.numRequests
+        return store.subscription.meteredUsage - this.currentPlan.numRequests;
       }
-      return 0
+      return 0;
     },
     // Estimate for next month's bill
-    nextBillingEstimate: function () {
+    nextBillingEstimate: function() {
       // Only provide an estimate if we have an active subscription
       if (!store.subscription) {
-        return null
+        return null;
       }
       // Format the number as currency
-      const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      })
-      const estimate = store.nextBillingEstimate
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+      const estimate = store.nextBillingEstimate;
       if (estimate) {
-        return formatter.format(estimate)
+        return formatter.format(estimate);
       }
-      return null
+      return null;
     },
     // The current subscription's monthly plan
-    currentPlan: function () {
+    currentPlan: function() {
       if (store.subscription) {
-        return store.getPlan(store.subscription.plan)
+        return store.getPlan(store.subscription.plan);
       }
       return {
         maxFonts: 0,
         numRequests: 0,
-      }
+      };
     },
     // Date of the next billing cycle
-    nextBillingCycle: function () {
+    nextBillingCycle: function() {
       const monthNames = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ]
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
       if (store.subscription) {
-        const date = new Date(store.subscription.currentPeriodEnd * 1000)
-        const day = date.getDate()
-        const month = monthNames[date.getMonth()]
-        const year = date.getFullYear()
-        return `${month} ${day}, ${year}`
+        const date = new Date(store.subscription.currentPeriodEnd * 1000);
+        const day = date.getDate();
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+        return `${month} ${day}, ${year}`;
       }
-      return null
+      return null;
     },
     // Whether the monthly requests gauge is full
-    full: function () {
-      let full = this.requests > this.numRequests
-      return full
+    full: function() {
+      let full = this.requests > this.numRequests;
+      return full;
     },
   },
   async mounted() {
     // Fetch an estimate for the bill when the account view is mounted
-    const estimate = await store.getNextBillingEstimate()
+    const estimate = await store.getNextBillingEstimate();
   },
   methods: {
     // Cancel the current subscription
     async cancelSubscription(subscription) {
       try {
-        const response = await axios.delete(`/api/subscription`)
+        const response = await axios.delete(`/api/subscription`);
         if (response.status == 200) {
-          store.subscription = null
+          store.subscription = null;
         }
       } catch (e) {
-        console.log(`Could not cancel subscription: ${e}`)
+        console.log(`Could not cancel subscription: ${e}`);
       }
     },
     // TODO: Add customer billing portal
     changePlan() {
-      this.$router.push('pricing')
+      this.$router.push("pricing");
     },
     changePayment() {
-      this.$router.push('payment')
+      this.$router.push("payment");
     },
     changeFonts() {
-      this.$router.push('/')
+      this.$router.push("/");
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -325,7 +305,7 @@ button {
 
 button.upgrade {
   padding-right: 25px;
-  background: url('/assets/icons/arrow-pink.svg') right 5px no-repeat;
+  background: url("/assets/icons/arrow-pink.svg") right 5px no-repeat;
   background-size: 11%;
 }
 
@@ -351,6 +331,7 @@ button.upgrade {
 .account-item:first-child {
   border-top: 0;
 }
+
 .account-item h2 {
   margin: 0;
   font-weight: 500;
@@ -371,7 +352,7 @@ button.upgrade {
   align-self: flex-start;
 }
 
-input[type='text'] {
+input[type="text"] {
   border: 0;
   padding: 0;
 }
@@ -387,31 +368,31 @@ input[type='text'] {
   width: 24px;
   height: 15px;
   margin-right: 10px;
-  background: url('/assets/icons/card/unknown.svg') no-repeat left center;
+  background: url("/assets/icons/card/unknown.svg") no-repeat left center;
 }
 
 .card-brand.amex {
-  background-image: url('/assets/icons/card/amex.svg');
+  background-image: url("/assets/icons/card/amex.svg");
 }
 
 .card-brand.diners {
-  background-image: url('/assets/icons/card/diners.svg');
+  background-image: url("/assets/icons/card/diners.svg");
 }
 
 .card-brand.discover {
-  background-image: url('/assets/icons/card/discover.svg');
+  background-image: url("/assets/icons/card/discover.svg");
 }
 
 .card-brand.jcb {
-  background-image: url('/assets/icons/card/jcb.svg');
+  background-image: url("/assets/icons/card/jcb.svg");
 }
 
 .card-brand.mastercard {
-  background-image: url('/assets/icons/card/mastercard.svg');
+  background-image: url("/assets/icons/card/mastercard.svg");
 }
 
 .card-brand.visa {
-  background-image: url('/assets/icons/card/visa.svg');
+  background-image: url("/assets/icons/card/visa.svg");
 }
 
 .requests p {
