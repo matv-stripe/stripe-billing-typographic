@@ -3,13 +3,6 @@
     <h1 class="title">Account information</h1>
     <section class="subscription">
       <section class="account-item">
-        <div class="details">
-          <button class="see-plan" @click.prevent="openCustomerBillingPortal()">
-            Open customer billing portal
-          </button>
-        </div>
-      </section>
-      <section class="account-item">
         <h2>Email</h2>
         <div class="details">{{ store.email }}</div>
       </section>
