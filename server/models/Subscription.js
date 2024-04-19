@@ -28,17 +28,17 @@
  * The Customer model has a few relations to other models:
  *  - The Subscription belongs to exactly one Customer (subscription.customerId)
  */
-'use strict';
+"use strict";
 
-const config = require('../../config');
-const Model = require('./Model');
-const stripe = require('stripe')(config.stripe.secretKey);
-const Plan = require('./Plan');
-const db = require('../database');
+const config = require("../../config");
+const Model = require("./Model");
+const stripe = require("stripe")(config.stripe.secretKey);
+const Plan = require("./Plan");
+const db = require("../database");
 
 class Subscription extends Model {
   static get table() {
-    return 'subscriptions';
+    return "subscriptions";
   }
 
   constructor(opts) {
@@ -60,7 +60,7 @@ class Subscription extends Model {
   // Get a Subscription by id from the database
   static async getById(id) {
     try {
-      const [subscription] = await db(this.table).where('id', id);
+      const [subscription] = await db(this.table).where("id", id);
       // Subscription not found: return null
       if (!subscription) {
         return null;
@@ -74,7 +74,10 @@ class Subscription extends Model {
   // Get a Subscription belonging to a Customer from the database
   static async getByCustomer(customerId) {
     try {
-      const [subscription] = await db(this.table).where('customerId', customerId);
+      const [subscription] = await db(this.table).where(
+        "customerId",
+        customerId
+      );
       // Subscription not found: return null
       if (!subscription) {
         return null;
@@ -111,13 +114,13 @@ class Subscription extends Model {
   static async create(customer, plan) {
     try {
       if (!customer || !plan) {
-        throw new Error('Missing a required parameter: customer, plan');
+        throw new Error("Missing a required parameter: customer, plan");
       }
       // Fetch matching plans from our local database
-      const [monthlyPlan] = await db(Plan.table).where('nickname', plan);
+      const [monthlyPlan] = await db(Plan.table).where("nickname", plan);
       const [meteredPlan] = await db(Plan.table).where(
-        'nickname',
-        plan + '_requests'
+        "nickname",
+        plan + "_requests"
       );
 
       if (!monthlyPlan || !meteredPlan) {
@@ -141,9 +144,9 @@ class Subscription extends Model {
       // If we have a payment method, charge it
       // automatically. Otherwise, we send a hosted invoice via email.
       if (customer.paymentMethodId) {
-        stripeSub.collection_method = 'charge_automatically';
+        stripeSub.collection_method = "charge_automatically";
       } else {
-        stripeSub.collection_method = 'send_invoice';
+        stripeSub.collection_method = "send_invoice";
         stripeSub.days_until_due = 30;
       }
       // Stripe: Create the subscription
@@ -151,10 +154,10 @@ class Subscription extends Model {
 
       // Find the two Stripe SubscriptionItems we created
       const stripeMonthlySub = stripeSubscription.items.data.find(
-        item => item.plan.nickname === monthlyPlan.nickname
+        (item) => item.plan.nickname === monthlyPlan.nickname
       );
       const stripeMeteredSub = stripeSubscription.items.data.find(
-        item => item.plan.nickname === meteredPlan.nickname
+        (item) => item.plan.nickname === meteredPlan.nickname
       );
 
       // DB: Add the subscription to our local database
@@ -192,7 +195,7 @@ class Subscription extends Model {
     try {
       // Fetch a matching plan
       const monthlyPlan = await Plan.getByNickname(plan);
-      const meteredPlan = await Plan.getByNickname(plan + '_requests');
+      const meteredPlan = await Plan.getByNickname(plan + "_requests");
       if (!monthlyPlan || !meteredPlan) {
         throw new Error(
           `Monthly or metered plans for ${plan} not found in local database.`
@@ -216,8 +219,8 @@ class Subscription extends Model {
 
       // DB: Update the subscription in our local database
       const updated = await db(this.constructor.table)
-        .where('id', this.id)
-        .update({plan});
+        .where("id", this.id)
+        .update({ plan });
       this.plan = plan;
       return this;
     } catch (e) {
@@ -234,7 +237,7 @@ class Subscription extends Model {
       const stripeSubscription = await stripe.subscriptions.del(this.stripeId);
       // DB: Delete the subscription from our local database
       const canceled = await db(this.constructor.table)
-        .where('id', this.id)
+        .where("id", this.id)
         .del();
     } catch (e) {
       throw new Error(
@@ -263,8 +266,8 @@ class Subscription extends Model {
       // DB: Update the database with the new metered usage numbers
       const totalRequests = this.meteredUsage + numRequests;
       const updated = await db(this.constructor.table)
-        .where('id', this.id)
-        .update({meteredUsage: totalRequests});
+        .where("id", this.id)
+        .update({ meteredUsage: totalRequests });
       this.meteredUsage = totalRequests;
       return totalRequests;
     } catch (e) {

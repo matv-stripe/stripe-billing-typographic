@@ -3,20 +3,35 @@
     <h1 class="title">Account information</h1>
     <section class="subscription">
       <section class="account-item">
+        <div class="details">
+          <button class="see-plan" @click.prevent="openCustomerBillingPortal()">
+            Open customer billing portal
+          </button>
+        </div>
+      </section>
+      <section class="account-item">
         <h2>Email</h2>
-        <div class="details">{{store.email}}</div>
+        <div class="details">{{ store.email }}</div>
       </section>
       <section class="account-item">
         <h2>Plan</h2>
         <div class="details">
           <p v-if="!store.subscription">
-            You haven’t <a class="change-plan" @click.prevent="changePlan()">signed up</a> for a plan yet.
+            You haven’t
+            <a class="change-plan" @click.prevent="changePlan()">signed up</a>
+            for a plan yet.
           </p>
           <template v-else>
-            <p>{{currentPlan.name}} plan, ${{currentPlan.rate}} per month</p>
+            <p>
+              {{ currentPlan.name }} plan, ${{ currentPlan.rate }} per month
+            </p>
             <ul>
-              <li v-for="(feature, index) in currentPlan.features" 
-                  v-text="feature" :key="index" class="feature"></li>
+              <li
+                v-for="(feature, index) in currentPlan.features"
+                v-text="feature"
+                :key="index"
+                class="feature"
+              ></li>
             </ul>
           </template>
         </div>
@@ -25,11 +40,25 @@
       <section class="account-item">
         <h2>Payment</h2>
         <div class="details payment-details">
-          <template v-if="store.paymentMethod && store.subscription.collectionMethod === 'charge_automatically'">
-            <div :class="['card-brand', store.paymentMethod.brand.toLowerCase()]"></div>
-            <p class="last4">&bull;&bull;&bull;&bull;{{store.paymentMethod.last4}}</p>
+          <template
+            v-if="
+              store.paymentMethod &&
+              store.subscription.collectionMethod === 'charge_automatically'
+            "
+          >
+            <div
+              :class="['card-brand', store.paymentMethod.brand.toLowerCase()]"
+            ></div>
+            <p class="last4">
+              &bull;&bull;&bull;&bull;{{ store.paymentMethod.last4 }}
+            </p>
           </template>
-          <p v-else-if="store.subscription && store.subscription.collectionMethod === 'send_invoice'">
+          <p
+            v-else-if="
+              store.subscription &&
+              store.subscription.collectionMethod === 'send_invoice'
+            "
+          >
             Invoices will be emailed at the end of the billing cycle.
           </p>
           <p v-else>No payment method.</p>
@@ -40,49 +69,87 @@
         <h2>Billing cycle</h2>
         <div class="details">
           <p v-if="store.subscription">
-            You’ll be billed <span :class="{'full': extraRequests > 0}" 
-              v-text="nextBillingEstimate"></span> on {{nextBillingCycle}}.
+            You’ll be billed
+            <span
+              :class="{ full: extraRequests > 0 }"
+              v-text="nextBillingEstimate"
+            ></span>
+            on {{ nextBillingCycle }}.
           </p>
           <p v-else>You don’t have an active subscription.</p>
         </div>
-        <button v-if="store.subscription" class="update" @click.prevent="cancelSubscription()">Cancel</button>
+        <button
+          v-if="store.subscription"
+          class="update"
+          @click.prevent="cancelSubscription()"
+        >
+          Cancel
+        </button>
       </section>
       <template v-if="store.subscription">
         <section class="account-item">
           <h2>Fonts</h2>
           <div class="details">
             <p v-if="store.selectedFonts.length === 0">
-              You haven’t chosen your <strong>{{currentPlan.maxFonts ? currentPlan.maxFonts : 'unlimited'}}
-              included</strong> {{currentPlan.maxFonts === 1 ? 'font' : 'fonts' }}.
+              You haven’t chosen your
+              <strong>
+                {{
+                  currentPlan.maxFonts ? currentPlan.maxFonts : 'unlimited'
+                }}
+                included
+              </strong>
+              {{ currentPlan.maxFonts === 1 ? 'font' : 'fonts' }}.
             </p>
             <p v-else>
-              You’ve chosen <strong>{{store.selectedFonts.length}} of your
-              {{currentPlan.maxFonts ? currentPlan.maxFonts : 'unlimited'}} 
-              included</strong> {{currentPlan.maxFonts === 1 ? 'font' : 'fonts' }}.
+              You’ve chosen
+              <strong>
+                {{ store.selectedFonts.length }} of your
+                {{ currentPlan.maxFonts ? currentPlan.maxFonts : 'unlimited' }}
+                included
+              </strong>
+              {{ currentPlan.maxFonts === 1 ? 'font' : 'fonts' }}.
             </p>
           </div>
-          <button class="update" @click.prevent="changeFonts()">Change fonts</button>
+          <button class="update" @click.prevent="changeFonts()">
+            Change fonts
+          </button>
         </section>
         <section class="account-item requests">
           <h2>Requests</h2>
           <div class="details">
             <p v-if="extraRequests <= 0">
-              You’ve used <strong>{{requests}} of your included {{numRequests}}</strong>
-              requests this month.</p>
+              You’ve used
+              <strong>{{ requests }} of your included {{ numRequests }}</strong>
+              requests this month.
+            </p>
             <template v-else>
-              <p>You’ve made <span class="full">{{requests}}</span> requests this month.</p>
               <p>
-                That’s <span class="full">{{extraRequests.toLocaleString(undefined)}}</span> more than your
-                included <strong>{{numRequests}}</strong> requests.
+                You’ve made
+                <span class="full">{{ requests }}</span>
+                requests this month.
+              </p>
+              <p>
+                That’s
+                <span class="full">
+                  {{ extraRequests.toLocaleString(undefined) }}
+                </span>
+                more than your included
+                <strong>{{ numRequests }}</strong>
+                requests.
               </p>
             </template>
             <div class="meter">
-              <div class="progress" :class="{full: extraRequests > 0}" 
-                   :style="{width: requestPercentage+'%'}"></div>
-              </div>
+              <div
+                class="progress"
+                :class="{ full: extraRequests > 0 }"
+                :style="{ width: requestPercentage + '%' }"
+              ></div>
+            </div>
             <div class="upgrade-plan" v-if="extraRequests > 0">
               <p>Want to increase your included requests?</p>
-              <button class="upgrade" @click="$router.push('/pricing')">Upgrade your plan</button>
+              <button class="upgrade" @click="$router.push('/pricing')">
+                Upgrade your plan
+              </button>
             </div>
           </div>
         </section>
@@ -99,73 +166,73 @@
  * Top-level component that show an account summary for the user.
  */
 
-import axios from 'axios';
-import store from '../store';
+import axios from 'axios'
+import store from '../store'
 
 export default {
   name: 'Account',
   data() {
-    return {store};
+    return { store }
   },
   computed: {
     // Calculate the percentage of allowed requests made in this billing cycle
-    requestPercentage: function() {
+    requestPercentage: function () {
       if (store.subscription.meteredUsage && this.currentPlan.numRequests) {
         let percentage =
-          store.subscription.meteredUsage / this.currentPlan.numRequests * 100;
+          (store.subscription.meteredUsage / this.currentPlan.numRequests) * 100
         // If the percentage is over 100%, round off to 100%
         if (percentage > 100) {
-          percentage = 100;
+          percentage = 100
         }
-        return percentage;
+        return percentage
       }
     },
     // Number of metered requests used this billing cycle (formatted)
-    requests: function() {
+    requests: function () {
       if (store.subscription.meteredUsage) {
-        return store.subscription.meteredUsage.toLocaleString(undefined);
+        return store.subscription.meteredUsage.toLocaleString(undefined)
       }
-      return 0;
+      return 0
     },
     // Number of metered requests allowed in this plan
-    numRequests: function() {
-      return this.currentPlan.numRequests.toLocaleString(undefined);
+    numRequests: function () {
+      return this.currentPlan.numRequests.toLocaleString(undefined)
     },
-    extraRequests: function() {
+    extraRequests: function () {
       if (this.currentPlan.numRequests) {
-        return store.subscription.meteredUsage - this.currentPlan.numRequests;
+        return store.subscription.meteredUsage - this.currentPlan.numRequests
       }
-      return 0;
+      return 0
     },
     // Estimate for next month's bill
-    nextBillingEstimate: function() {
+    nextBillingEstimate: function () {
       // Only provide an estimate if we have an active subscription
       if (!store.subscription) {
-        return null;
+        return null
       }
       // Format the number as currency
       const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-      });
-      const estimate = store.nextBillingEstimate;
+      })
+      const estimate = store.nextBillingEstimate
       if (estimate) {
-        return formatter.format(estimate);
+        return formatter.format(estimate)
       }
-      return null;
+      return null
     },
     // The current subscription's monthly plan
-    currentPlan: function() {
+    currentPlan: function () {
       if (store.subscription) {
-        return store.getPlan(store.subscription.plan);
+        return store.getPlan(store.subscription.plan)
       }
       return {
         maxFonts: 0,
         numRequests: 0,
-      };
+      }
     },
     // Date of the next billing cycle
-    nextBillingCycle: function() {
+    nextBillingCycle: function () {
       const monthNames = [
         'January',
         'February',
@@ -179,49 +246,63 @@ export default {
         'October',
         'November',
         'December',
-      ];
+      ]
       if (store.subscription) {
-        const date = new Date(store.subscription.currentPeriodEnd * 1000);
-        const day = date.getDate();
-        const month = monthNames[date.getMonth()];
-        const year = date.getFullYear();
-        return `${month} ${day}, ${year}`;
+        const date = new Date(store.subscription.currentPeriodEnd * 1000)
+        const day = date.getDate()
+        const month = monthNames[date.getMonth()]
+        const year = date.getFullYear()
+        return `${month} ${day}, ${year}`
       }
-      return null;
+      return null
     },
     // Whether the monthly requests gauge is full
-    full: function() {
-      let full = this.requests > this.numRequests;
-      return full;
+    full: function () {
+      let full = this.requests > this.numRequests
+      return full
     },
   },
   async mounted() {
     // Fetch an estimate for the bill when the account view is mounted
-    const estimate = await store.getNextBillingEstimate();
+    const estimate = await store.getNextBillingEstimate()
   },
   methods: {
     // Cancel the current subscription
     async cancelSubscription(subscription) {
       try {
-        const response = await axios.delete(`/api/subscription`);
+        const response = await axios.delete(`/api/subscription`)
         if (response.status == 200) {
-          store.subscription = null;
+          store.subscription = null
         }
       } catch (e) {
-        console.log(`Could not cancel subscription: ${e}`);
+        console.log(`Could not cancel subscription: ${e}`)
+      }
+    },
+    // TODO: Add customer billing portal
+    async openCustomerBillingPortal() {
+      try {
+        const response = await axios.post('/api/customer-portal')
+        const url = response.data.session.url
+        if (url) {
+          window.location = url
+        } else {
+          console.log(response)
+        }
+      } catch (e) {
+        console.log(`couldn't create customer portal session`, e)
       }
     },
     changePlan() {
-      this.$router.push('pricing');
+      this.$router.push('pricing')
     },
     changePayment() {
-      this.$router.push('payment');
+      this.$router.push('payment')
     },
     changeFonts() {
-      this.$router.push('/');
+      this.$router.push('/')
     },
   },
-};
+}
 </script>
 
 <style scoped>

@@ -28,6 +28,23 @@ router.get('/environment', async (req, res, next) => {
   return res.send({stripePublicKey: config.stripe.publicKey});
 });
 
+// Create a customer portal session
+router.post('/customer-portal', verifyToken, async (req, res, next) => {
+  const {customerId} = res.locals;
+  const customer = await Customer.getById(customerId);
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customer.stripeId,
+      return_url: 'http://localhost:3000/#/'
+    });
+  
+    res.send({session})
+    return res.sendStatus(200);
+  } catch (e) {
+    return next(new Error(e));
+  }
+});
+
 // Get the account for this user
 router.get('/account', verifyToken, async (req, res, next) => {
   const {accountId} = res.locals;

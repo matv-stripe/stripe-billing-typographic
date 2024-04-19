@@ -53,17 +53,17 @@
  * Information banner at the bottom of the app.
  */
 
-import axios from 'axios';
-import store from '../store';
+import axios from "axios";
+import store from "../store";
 
 export default {
-  name: 'Banner',
+  name: "Banner",
   data() {
     return {
       store,
       currentRoute: null,
       clipboard: null,
-      testCardNumber: '4000 0025 0000 3155',
+      testCardNumber: "4000 0025 0000 3155",
     };
   },
   // Get the current route and show the right banner when the component mounts
@@ -81,7 +81,7 @@ export default {
       try {
         // Choose a random number of requests to report
         const numRequests = Math.floor(Math.random() * 10000);
-        const response = await axios.post('/api/usage', {numRequests});
+        const response = await axios.post("/api/usage", { numRequests });
         if (response.status == 200) {
           store.subscription.meteredUsage = response.data.numRequests;
           const updatedEstimate = await store.getNextBillingEstimate();
@@ -97,9 +97,9 @@ export default {
       window.getSelection().addRange(range);
       // Copy the selection to the clipboard
       try {
-        document.execCommand('copy');
+        document.execCommand("copy");
       } catch (e) {
-        console.log('Unable to copy test card number to clipboard.');
+        console.log("Unable to copy test card number to clipboard.");
       }
       // Remove our selection
       window.getSelection().removeAllRanges();
@@ -127,7 +127,7 @@ export default {
 .logo {
   flex-basis: 60px;
   position: relative;
-  background: url('/assets/images/logo.svg') center center no-repeat;
+  background: url("/assets/images/logo.svg") center center no-repeat;
   height: 24px;
   background-size: 90%;
   margin-right: 15px;
@@ -135,7 +135,7 @@ export default {
 }
 
 .info {
-  background: url('/assets/icons/info.svg') left center no-repeat;
+  background: url("/assets/icons/info.svg") left center no-repeat;
   width: 30px;
   height: 19px;
 }
@@ -172,15 +172,15 @@ p.test-card-number {
 }
 
 button.copy {
-  background: url('/assets/icons/copy.svg') left top 3px no-repeat, white;
+  background: url("/assets/icons/copy.svg") left top 3px no-repeat, white;
   padding-left: 20px;
 }
 
 button.reset {
-  background: url('/assets/icons/reset.svg') left center no-repeat, white;
+  background: url("/assets/icons/reset.svg") left center no-repeat, white;
 }
 
 button.add {
-  background: url('/assets/icons/add-blue.svg') left center no-repeat, white;
+  background: url("/assets/icons/add-blue.svg") left center no-repeat, white;
 }
 </style>

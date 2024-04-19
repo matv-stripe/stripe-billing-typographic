@@ -175,13 +175,13 @@ export default {
       this.submittingPaymentMethod = true;
       try {
         const response = await axios.post('/api/invoices/subscribe');
-        // If we have an active subscription, update the billing method to use invoices
+        // if we have an active subscription, update the billing method to use invoices
         if (store.subscription) {
-          store.subscription.collectionMethod = 'send_invoice';
+          store.subscription.collectionmethod = 'send_invoice';
         }
         this.$router.push('account');
       } catch (e) {
-        console.log(`Couldn't request an invoice: ${e}`);
+        console.log(`couldn't request an invoice: ${e}`);
       }
     },
     async updatePaymentMethod() {
